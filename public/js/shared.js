@@ -1,8 +1,5 @@
-// Small helpers shared by the storefront and the admin pages.
-
 const shop = {
   name: "Shop",
-  whatsapp: "",
   currency: "USD"
 };
 
@@ -26,7 +23,6 @@ async function api(url, options = {}) {
   return body;
 }
 
-// Creates an element: el("p", { class: "note" }, "text", childNode)
 function el(tag, attributes = {}, ...children) {
   const node = document.createElement(tag);
 
@@ -52,11 +48,6 @@ function mainPhoto(product) {
   return product.images[0]?.url || placeholderImage(product.name);
 }
 
-function whatsappLink(message) {
-  if (!shop.whatsapp) return null;
-  return `https://wa.me/${shop.whatsapp}?text=${encodeURIComponent(message)}`;
-}
-
 function stockLabel(stock) {
   if (stock === 0) return el("p", { class: "sold-out" }, "Out of stock");
   if (stock <= 3) return el("p", { class: "low-stock" }, `Only ${stock} left`);
@@ -68,11 +59,63 @@ function setNote(element, text, isError = false) {
   element.classList.toggle("bad", isError);
 }
 
+const CART_KEY = "cart";
+
+function readCart() {
+  try {
+    const items = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+    return Array.isArray(items) ? items.filter(item => Number(item.id) > 0 && Number(item.qty) > 0) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeCart(items) {
+  localStorage.setItem(CART_KEY, JSON.stringify(items));
+  showCartCount();
+}
+
+function addToCart(id, quantity = 1, stock = Infinity) {
+  const items = readCart();
+  const line = items.find(item => item.id === id);
+  const total = Math.min((line?.qty || 0) + quantity, stock);
+
+  if (line) {
+    line.qty = total;
+  } else {
+    items.push({ id, qty: total });
+  }
+
+  writeCart(items);
+  return total;
+}
+
+function setCartQuantity(id, quantity) {
+  const items = readCart().filter(item => item.id !== id);
+
+  if (quantity > 0) items.push({ id, qty: quantity });
+
+  writeCart(items);
+}
+
+function clearCart() {
+  localStorage.removeItem(CART_KEY);
+  showCartCount();
+}
+
+function showCartCount() {
+  const count = readCart().reduce((total, item) => total + item.qty, 0);
+
+  for (const node of document.querySelectorAll("[data-cart-count]")) {
+    node.textContent = count;
+    node.hidden = count === 0;
+  }
+}
+
 async function loadShopSettings() {
   try {
     Object.assign(shop, await api("/api/settings"));
   } catch {
-    // Keep the defaults; the pages still work without the shop details.
   }
 
   formatMoney = new Intl.NumberFormat(navigator.language || "en-US", {
@@ -85,4 +128,6 @@ async function loadShopSettings() {
   for (const node of document.querySelectorAll("[data-shop-name]")) {
     node.textContent = shop.name;
   }
+
+  showCartCount();
 }

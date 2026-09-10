@@ -1,6 +1,5 @@
 import { readToken } from "../services/tokenService.js";
 
-// Reads "Authorization: Bearer <token>" and puts the admin on the request.
 export function requireAdmin(req, res, next) {
   const [scheme, token] = (req.get("Authorization") || "").split(" ");
 

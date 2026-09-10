@@ -1,6 +1,3 @@
-// Product list page. The search text and the chosen category live in the URL so
-// the page can be shared and the back button works.
-
 const list = document.querySelector("#products");
 const resultLine = document.querySelector("#result-line");
 const filters = document.querySelector("#filters");

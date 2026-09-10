@@ -1,8 +1,6 @@
 import pg from "pg";
 import { databaseUrl } from "../config/env.js";
 
-// Postgres returns NUMERIC as a string to avoid float rounding. Prices here are
-// small enough that a JS number is fine, and the frontend expects a number.
 pg.types.setTypeParser(pg.types.builtins.NUMERIC, Number);
 
 export const pool = new pg.Pool({ connectionString: databaseUrl });
@@ -15,7 +13,6 @@ export function query(text, params) {
   return pool.query(text, params);
 }
 
-// Runs the callback inside a transaction and always releases the client.
 export async function withTransaction(callback) {
   const client = await pool.connect();
 

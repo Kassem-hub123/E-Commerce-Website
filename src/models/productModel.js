@@ -1,7 +1,5 @@
 import { query, withTransaction } from "../db/pool.js";
 
-// One query for the products and their images, so the list does not run an
-// extra query per product.
 const productSelect = `
   SELECT
     p.id,
@@ -76,7 +74,6 @@ export function createProduct({ name, description, price, stock, categoryId, ima
   });
 }
 
-// Returns the images that are no longer used, so the caller can delete the files.
 export function updateProduct(id, { name, description, price, stock, categoryId, images, keepImages }) {
   return withTransaction(async client => {
     const { rows } = await client.query(

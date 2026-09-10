@@ -40,13 +40,11 @@ async function saveToImageKit(file) {
   return { url: response.url, fileId: response.fileId ?? null };
 }
 
-// Returns [{ url, fileId }] in the same order the files were uploaded.
 export function saveImages(files = []) {
   const save = imageKitEnabled ? saveToImageKit : saveToDisk;
   return Promise.all(files.map(save));
 }
 
-// Best effort clean-up: a failed delete should never break the request.
 export async function removeImage({ url, fileId }) {
   try {
     if (fileId && client) {

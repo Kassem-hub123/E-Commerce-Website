@@ -1,6 +1,3 @@
-// Login screen shared by the two admin pages. Calls onReady() once the stored
-// token is confirmed by the server.
-
 function setupAdminPage(onReady) {
   const login = document.querySelector("#login");
   const dashboard = document.querySelector("#dashboard");

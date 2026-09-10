@@ -1,5 +1,3 @@
-// Admin products page: add, edit, delete and search products.
-
 const form = document.querySelector("#product-form");
 const formTitle = document.querySelector("#form-title");
 const saveButton = document.querySelector("#save-button");
@@ -12,8 +10,15 @@ const keepImagesRow = document.querySelector("#keep-images-row");
 const productList = document.querySelector("#product-list");
 const searchForm = document.querySelector("#admin-search");
 const searchInput = document.querySelector("#admin-search-input");
+const keepImagesBox = form.elements.keep_images;
+
+const MAX_PHOTOS = 3;
 
 let editingId = null;
+let currentPhotos = [];
+
+let chosenFiles = [];
+let previewUrls = [];
 
 async function fillCategories() {
   const categories = await api("/api/categories");
@@ -65,10 +70,101 @@ async function showProducts() {
   );
 }
 
+function freeSlots() {
+  return MAX_PHOTOS - (editingId && keepImagesBox.checked ? currentPhotos.length : 0);
+}
+
+function showPreviews() {
+  for (const url of previewUrls) URL.revokeObjectURL(url);
+  previewUrls = [];
+
+  const kept = editingId && keepImagesBox.checked ? currentPhotos.map(image => image.url) : [];
+
+  previews.replaceChildren(
+    ...kept.map(url => el("img", { src: url, alt: "" })),
+    ...chosenFiles.map(file => {
+      const url = URL.createObjectURL(file);
+      previewUrls.push(url);
+
+      const drop = el("button", { class: "drop", type: "button", "aria-label": `Remove ${file.name}` }, "×");
+      drop.addEventListener("click", () => removePhoto(file));
+
+      return el("span", { class: "shot" }, el("img", { src: url, alt: file.name }), drop);
+    })
+  );
+}
+
+function tooManyMessage(slots) {
+  if (slots === 0) {
+    return `This product already has ${MAX_PHOTOS} photos. Untick the box below to replace them.`;
+  }
+
+  if (slots === MAX_PHOTOS) {
+    return `Pick ${MAX_PHOTOS} photos at most.`;
+  }
+
+  return `Only ${slots} more photo${slots === 1 ? "" : "s"} fit, ${MAX_PHOTOS} in total.`;
+}
+
+function syncPhotoInput() {
+  const bag = new DataTransfer();
+
+  for (const file of chosenFiles) bag.items.add(file);
+
+  photoInput.files = bag.files;
+}
+
+function samePhoto(a, b) {
+  return a.name === b.name && a.size === b.size && a.lastModified === b.lastModified;
+}
+
+function addPhotos(files) {
+  const slots = freeSlots();
+  let full = false;
+
+  for (const file of files) {
+    if (chosenFiles.some(chosen => samePhoto(chosen, file))) continue;
+
+    if (chosenFiles.length >= slots) {
+      full = true;
+      continue;
+    }
+
+    chosenFiles.push(file);
+  }
+
+  setNote(productNote, full ? tooManyMessage(slots) : "", full);
+  syncPhotoInput();
+  showPreviews();
+}
+
+function removePhoto(file) {
+  chosenFiles = chosenFiles.filter(chosen => chosen !== file);
+
+  if (productNote.classList.contains("bad")) setNote(productNote, "");
+
+  syncPhotoInput();
+  showPreviews();
+}
+
+function trimPhotos() {
+  const slots = freeSlots();
+
+  if (chosenFiles.length > slots) {
+    chosenFiles = chosenFiles.slice(0, slots);
+    setNote(productNote, tooManyMessage(slots), true);
+  }
+
+  syncPhotoInput();
+  showPreviews();
+}
+
 function resetForm() {
   editingId = null;
+  currentPhotos = [];
+  chosenFiles = [];
   form.reset();
-  previews.replaceChildren();
+  showPreviews();
   keepImagesRow.hidden = true;
   formTitle.textContent = "Add a product";
   saveButton.textContent = "Save product";
@@ -78,17 +174,17 @@ function resetForm() {
 
 function startEdit(product) {
   editingId = product.id;
+  currentPhotos = product.images;
   form.elements.name.value = product.name;
   form.elements.description.value = product.description;
   form.elements.price.value = product.price;
   form.elements.stock.value = product.stock;
   form.elements.category_id.value = product.category_id;
-  form.elements.images.value = "";
-  form.elements.keep_images.checked = true;
+  chosenFiles = [];
+  photoInput.value = "";
+  keepImagesBox.checked = true;
 
-  previews.replaceChildren(
-    ...product.images.map(image => el("img", { src: image.url, alt: "" }))
-  );
+  showPreviews();
 
   keepImagesRow.hidden = product.images.length === 0;
   formTitle.textContent = `Edit "${product.name}"`;
@@ -118,8 +214,7 @@ form.addEventListener("submit", async event => {
 
   const data = new FormData(form);
 
-  // The checkbox is only sent when it is ticked, so send the flag explicitly.
-  data.set("keep_images", editingId && form.elements.keep_images.checked ? "true" : "false");
+  data.set("keep_images", editingId && keepImagesBox.checked ? "true" : "false");
 
   try {
     await api(editingId ? `/api/products/${editingId}` : "/api/products", {
@@ -138,12 +233,8 @@ form.addEventListener("submit", async event => {
   }
 });
 
-photoInput.addEventListener("change", () => {
-  const files = [...photoInput.files];
-  previews.replaceChildren(
-    ...files.map(file => el("img", { src: URL.createObjectURL(file), alt: file.name }))
-  );
-});
+photoInput.addEventListener("change", () => addPhotos([...photoInput.files]));
+keepImagesBox.addEventListener("change", trimPhotos);
 
 cancelButton.addEventListener("click", resetForm);
 

@@ -1,13 +1,15 @@
 import { findCategory } from "../models/categoryModel.js";
+import { MAX_PRODUCT_IMAGES } from "../middleware/upload.js";
 import * as products from "../models/productModel.js";
 import { removeImages, saveImages } from "../services/imageStore.js";
+
+const tooManyPhotos = `A product can have up to ${MAX_PRODUCT_IMAGES} photos.`;
 
 function positiveId(value) {
   const id = Number(value);
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 
-// Multipart form fields always arrive as strings, so everything is parsed here.
 async function readProductForm(body) {
   const name = String(body?.name || "").trim();
   const description = String(body?.description || "").trim();
@@ -59,6 +61,10 @@ export async function create(req, res) {
     return res.status(400).json({ message: error });
   }
 
+  if ((req.files?.length || 0) > MAX_PRODUCT_IMAGES) {
+    return res.status(400).json({ message: tooManyPhotos });
+  }
+
   const images = await saveImages(req.files);
   const id = await products.createProduct({ ...data, images });
 
@@ -73,8 +79,19 @@ export async function update(req, res) {
     return res.status(400).json({ message: error });
   }
 
-  // Unchecked means the new uploads replace the current gallery.
+  const current = await products.findProduct(id);
+
+  if (!current) {
+    return res.status(404).json({ message: "Product not found." });
+  }
+
   const keepImages = req.body?.keep_images !== "false";
+  const kept = keepImages ? current.images.length : 0;
+
+  if (kept + (req.files?.length || 0) > MAX_PRODUCT_IMAGES) {
+    return res.status(400).json({ message: tooManyPhotos });
+  }
+
   const images = await saveImages(req.files);
   const result = await products.updateProduct(id, { ...data, images, keepImages });
 

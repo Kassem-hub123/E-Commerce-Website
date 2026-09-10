@@ -5,7 +5,6 @@ import { createToken } from "../services/tokenService.js";
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_MS = 10 * 60 * 1000;
 
-// Simple in-memory brute force guard. Enough for a single-server shop.
 const attempts = new Map();
 
 function attemptsFor(key) {

@@ -17,16 +17,13 @@ export const databaseUrl =
 export const jwtSecret = process.env.JWT_SECRET || "development-secret-do-not-use-in-production";
 export const tokenLifetime = process.env.JWT_EXPIRES_IN || "8h";
 
-// The first admin is created on startup if the table is empty.
 export const firstAdmin = {
   username: process.env.ADMIN_USERNAME || "admin",
   password: process.env.ADMIN_PASSWORD || "admin123"
 };
 
-// Shown in the storefront and used for the WhatsApp links.
 export const store = {
   name: process.env.STORE_NAME || "Corner Store",
-  whatsapp: (process.env.WHATSAPP_NUMBER || "").replace(/[^0-9]/g, ""),
   currency: process.env.CURRENCY || "USD"
 };
 

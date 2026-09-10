@@ -1,7 +1,6 @@
 import * as categories from "../models/categoryModel.js";
 
 const DUPLICATE_NAME = "23505";
-// Postgres reports 23001 for ON DELETE RESTRICT and 23503 for a plain foreign key.
 const STILL_IN_USE = ["23001", "23503"];
 
 function readName(body) {

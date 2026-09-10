@@ -1,5 +1,3 @@
-// Admin categories page: add, rename and delete categories.
-
 const form = document.querySelector("#category-form");
 const note = document.querySelector("#category-note");
 const list = document.querySelector("#category-list");
