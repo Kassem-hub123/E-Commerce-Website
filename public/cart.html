@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shop &mdash; Cart</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="shop-name" href="/" data-shop-name>Shop</a>
+      <nav>
+        <a class="cart-link" href="/cart.html" aria-current="page">Cart <span class="count" data-cart-count hidden>0</span></a>
+        <a href="/admin.html">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <a class="back" href="/">&larr; Keep shopping</a>
+    <h1>Your cart</h1>
+    <div id="cart">
+      <p class="empty">Loading…</p>
+    </div>
+  </main>
+
+  <script src="/js/shared.js"></script>
+  <script src="/js/cart.js"></script>
+</body>
+</html>

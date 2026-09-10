@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin &mdash; Orders</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="shop-name" href="/" data-shop-name>Shop</a>
+      <nav>
+        <a href="/admin.html">Products</a>
+        <a href="/categories.html">Categories</a>
+        <a href="/orders.html" aria-current="page">Orders</a>
+        <button class="link" id="logout" type="button" hidden>Log out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="login" id="login" hidden>
+      <h1>Admin login</h1>
+      <form id="login-form">
+        <label>
+          <span>Username</span>
+          <input name="username" type="text" autocomplete="username" required>
+        </label>
+        <label>
+          <span>Password</span>
+          <input name="password" type="password" autocomplete="current-password" required>
+        </label>
+        <button type="submit">Log in</button>
+        <p class="note" id="login-note" role="status"></p>
+      </form>
+    </section>
+
+    <div id="dashboard" hidden>
+      <section class="panel orders">
+        <h1>Orders</h1>
+        <div class="tabs" id="order-tabs" role="tablist">
+          <button type="button" role="tab" data-view="pending">Pending <span data-count>0</span></button>
+          <button type="button" role="tab" data-view="done">Done <span data-count>0</span></button>
+          <button type="button" role="tab" data-view="deleted">Deleted <span data-count>0</span></button>
+        </div>
+        <p class="note" id="order-note" role="status"></p>
+        <div id="order-list"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/js/shared.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/orders.js"></script>
+</body>
+</html>
