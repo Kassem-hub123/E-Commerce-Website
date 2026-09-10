@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shop</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="shop-name" href="/" data-shop-name>Shop</a>
+      <nav>
+        <a href="/admin.html">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <form class="search" id="search-form" role="search">
+      <input id="search-input" type="search" name="search" placeholder="Search products" aria-label="Search products">
+      <button type="submit">Search</button>
+    </form>
+
+    <div class="filters" id="filters"></div>
+
+    <p class="result-line" id="result-line">Loading products…</p>
+
+    <div class="grid" id="products"></div>
+  </main>
+
+  <script src="/js/shared.js"></script>
+  <script src="/js/store.js"></script>
+</body>
+</html>

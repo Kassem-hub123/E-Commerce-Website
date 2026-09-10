@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin &mdash; Products</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="shop-name" href="/" data-shop-name>Shop</a>
+      <nav>
+        <a href="/admin.html" aria-current="page">Products</a>
+        <a href="/categories.html">Categories</a>
+        <button class="link" id="logout" type="button" hidden>Log out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="login" id="login" hidden>
+      <h1>Admin login</h1>
+      <form id="login-form">
+        <label>
+          <span>Username</span>
+          <input name="username" type="text" autocomplete="username" required>
+        </label>
+        <label>
+          <span>Password</span>
+          <input name="password" type="password" autocomplete="current-password" required>
+        </label>
+        <button type="submit">Log in</button>
+        <p class="note" id="login-note" role="status"></p>
+      </form>
+    </section>
+
+    <div class="admin" id="dashboard" hidden>
+      <section class="panel">
+        <h1 id="form-title">Add a product</h1>
+
+        <form id="product-form">
+          <label>
+            <span>Name</span>
+            <input name="name" type="text" required>
+          </label>
+
+          <label>
+            <span>Description</span>
+            <textarea name="description" rows="4" required></textarea>
+          </label>
+
+          <div class="row">
+            <label>
+              <span>Price</span>
+              <input name="price" type="number" step="0.01" min="0" required>
+            </label>
+            <label>
+              <span>In stock</span>
+              <input name="stock" type="number" step="1" min="0" value="0" required>
+            </label>
+          </div>
+
+          <label>
+            <span>Category</span>
+            <select name="category_id" id="category-select" required></select>
+          </label>
+
+          <label>
+            <span>Photos</span>
+            <input id="photo-input" name="images" type="file" accept="image/*" multiple>
+          </label>
+          <p class="hint">Up to 8 images, 5 MB each. The first one is used on the product card.</p>
+          <div class="previews" id="previews"></div>
+
+          <label class="checkbox" id="keep-images-row" hidden>
+            <input name="keep_images" type="checkbox" checked>
+            Keep the photos already on this product
+          </label>
+
+          <div class="actions">
+            <button type="submit" id="save-button">Save product</button>
+            <button class="plain" type="button" id="cancel-edit" hidden>Cancel</button>
+          </div>
+          <p class="note" id="product-note" role="status"></p>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Products</h2>
+
+        <form class="admin-search" id="admin-search">
+          <input id="admin-search-input" type="search" placeholder="Search by name, description or category" aria-label="Search products">
+          <button type="submit">Search</button>
+          <button class="plain" type="button" id="clear-search">Clear</button>
+        </form>
+
+        <div id="product-list"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/js/shared.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>
