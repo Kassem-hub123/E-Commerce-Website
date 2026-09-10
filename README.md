@@ -103,8 +103,8 @@ filesystem untouched.
 You need Node.js 20 or newer and PostgreSQL 14 or newer.
 
 ```
-git clone https://github.com/Kassem-hub123/e-commerse-website.git
-cd e-commerse-website
+git clone https://github.com/Kassem-hub123/E-Commerce-Website.git
+cd E-Commerce-Website
 npm install
 ```
 
